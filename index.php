@@ -21,6 +21,10 @@ switch ($action) {
         (new MascotaController())->listar();
         break;
 
+    case 'ficha':
+        (new MascotaController())->ficha();
+        break;
+
     default:
         http_response_code(404);
         echo 'Página no encontrada';
