@@ -1,0 +1,8 @@
+# Clave de la API
+.env
+
+# Base de datos local
+*.db
+
+# Logs de tokens
+logs/*.log
