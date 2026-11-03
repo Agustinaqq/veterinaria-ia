@@ -13,6 +13,7 @@
         <div class="navbar-nav flex-row gap-3">
             <a class="nav-link" href="index.php?action=dashboard">Inicio</a>
             <a class="nav-link" href="index.php?action=mascotas">Mascotas</a>
+            <a class="nav-link" href="index.php?action=asistente">Asistente</a>
         </div>
     </div>
 </nav>
