@@ -13,7 +13,7 @@ class Vacuna
           AND v2.fecha_aplicada > v.fecha_aplicada
     )";
 
-    // Columnas y joins que comparten las dos consultas
+    // Columnas y joins que comparten las consultas del Dashboard
     private const BASE = "SELECT v.nombre_vacuna, v.proxima_dosis, m.nombre AS mascota,
                                  d.nombre AS dueno, d.telefono
                           FROM vacunas v
@@ -45,6 +45,24 @@ class Vacuna
                 ORDER BY v.proxima_dosis";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':dias' => $dias]);
+        return $stmt->fetchAll();
+    }
+
+    // Última dosis de cada vacuna de una mascota, con su estado calculado en SQL
+    public function deMascota(int $mascotaId): array
+    {
+        $sql = "SELECT v.nombre_vacuna, v.fecha_aplicada, v.proxima_dosis,
+                       CASE
+                           WHEN v.proxima_dosis < date('now', 'localtime') THEN 'vencida'
+                           WHEN v.proxima_dosis <= date('now', 'localtime', '+30 days') THEN 'por vencer'
+                           ELSE 'al día'
+                       END AS estado
+                FROM vacunas v
+                WHERE v.mascota_id = :id
+                  AND " . self::SOLO_ULTIMA . "
+                ORDER BY v.proxima_dosis";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':id' => $mascotaId]);
         return $stmt->fetchAll();
     }
 }

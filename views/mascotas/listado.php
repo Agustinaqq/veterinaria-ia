@@ -14,7 +14,7 @@
         <tbody>
             <?php foreach ($mascotas as $m): ?>
                 <tr>
-                    <td><?= e($m['nombre']) ?></td>
+                     <td><a href="index.php?action=ficha&id=<?= (int) $m['id'] ?>"><?= e($m['nombre']) ?></a></td>
                     <td><?= e($m['especie']) ?></td>
                     <td><?= e($m['raza']) ?></td>
                     <td><?= e($m['peso']) ?></td>
