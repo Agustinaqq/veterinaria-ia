@@ -11,6 +11,7 @@
     <div class="container">
         <a class="navbar-brand" href="index.php">🐾 Veterinaria</a>
         <div class="navbar-nav flex-row gap-3">
+            <a class="nav-link" href="index.php?action=dashboard">Inicio</a>
             <a class="nav-link" href="index.php?action=mascotas">Mascotas</a>
         </div>
     </div>

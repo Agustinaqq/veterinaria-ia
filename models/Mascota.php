@@ -18,4 +18,10 @@ class Mascota
                 ORDER BY m.nombre";
         return $this->pdo->query($sql)->fetchAll();
     }
+
+    // Cantidad total de mascotas
+    public function contar(): int
+    {
+        return (int) $this->pdo->query('SELECT COUNT(*) FROM mascotas')->fetchColumn();
+    }
 }

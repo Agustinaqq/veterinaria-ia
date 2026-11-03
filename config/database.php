@@ -1,4 +1,6 @@
 <?php
+// Zona horaria de Argentina, para que PHP y SQLite usen el mismo día
+date_default_timezone_set('America/Argentina/Buenos_Aires');
 // Conexión a SQLite. La base y las tablas se crean solas la primera vez.
 function obtenerConexion(): PDO
 {
