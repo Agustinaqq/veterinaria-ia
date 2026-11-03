@@ -6,3 +6,4 @@
 
 # Logs de tokens
 logs/*.log
+logs/*.csv
