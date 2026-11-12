@@ -10,6 +10,8 @@ require __DIR__ . '/models/Vacuna.php';
 
 require __DIR__ . '/services/IAService.php';
 require __DIR__ . '/services/ContextoAsistente.php';
+require __DIR__ . '/services/HerramientasAsistente.php';
+require __DIR__ . '/services/AgenteAsistente.php';
 
 require __DIR__ . '/controllers/DashboardController.php';
 require __DIR__ . '/controllers/MascotaController.php';

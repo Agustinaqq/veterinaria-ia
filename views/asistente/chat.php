@@ -4,6 +4,10 @@
 <div id="conversacion" class="border rounded p-3 mb-3 bg-light" style="min-height: 300px;"></div>
 
 <div class="input-group">
+    <select id="version" class="form-select" style="max-width: 220px;">
+        <option value="filtrado">v1: contexto filtrado</option>
+        <option value="tools" selected>v2: funciones</option>
+    </select>
     <input id="pregunta" type="text" class="form-control" maxlength="1000"
            placeholder="Ej: ¿qué mascotas tienen vacunas vencidas?">
     <button id="enviar" class="btn btn-success">Enviar</button>
@@ -13,6 +17,7 @@
 const conversacion = document.getElementById('conversacion');
 const campo = document.getElementById('pregunta');
 const boton = document.getElementById('enviar');
+const selector = document.getElementById('version');
 
 // Agrega un mensaje. Se usa textContent (no innerHTML) para que el texto
 // de la IA nunca se interprete como HTML.
@@ -45,15 +50,14 @@ async function enviar() {
         const respuesta = await fetch('index.php?action=consultar_ia', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pregunta }),
+            body: JSON.stringify({ pregunta, version: selector.value }),
         });
         const datos = await respuesta.json();
 
         if (!respuesta.ok) {
             agregarMensaje(datos.error, 'bg-danger-subtle me-5');
         } else {
-            const detalle = `Tokens: ${datos.tokens} · Datos enviados: ${datos.datos_enviados.join(', ')}`;
-            agregarMensaje(datos.respuesta, 'bg-white border me-5', detalle);
+            agregarMensaje(datos.respuesta, 'bg-white border me-5', `Tokens: ${datos.tokens} · ${datos.detalle}`);
         }
     } catch (error) {
         agregarMensaje('No se pudo conectar con el servidor.', 'bg-danger-subtle me-5');
