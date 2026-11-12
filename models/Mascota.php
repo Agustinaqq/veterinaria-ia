@@ -51,4 +51,18 @@ class Mascota
         $stmt->execute([':id' => $id]);
         return $stmt->fetchAll();
     }
+    
+     // Busca mascotas por nombre (parcial) y/o especie. Sin filtros, devuelve todas.
+    public function buscar(?string $nombre, ?string $especie): array
+    {
+        $sql = "SELECT m.id, m.nombre, m.especie, m.raza, d.nombre AS dueno
+                FROM mascotas m
+                JOIN duenos d ON d.id = m.dueno_id
+                WHERE (:nombre IS NULL OR m.nombre LIKE '%' || :nombre || '%')
+                  AND (:especie IS NULL OR lower(m.especie) = lower(:especie))
+                ORDER BY m.nombre";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':nombre' => $nombre, ':especie' => $especie]);
+        return $stmt->fetchAll();
+    }
 }
