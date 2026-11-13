@@ -2,6 +2,7 @@
 # genera los embeddings y los guarda en la base vectorial (ChromaDB).
 # Se corre una vez, y de nuevo cada vez que se agregan documentos:
 #   .\venv\Scripts\python.exe indexar.py
+import re
 from datetime import date
 from pathlib import Path
 
@@ -11,7 +12,7 @@ from sentence_transformers import SentenceTransformer
 
 CARPETA_DOCUMENTOS = Path(__file__).resolve().parent.parent / "documentos"
 CARPETA_BASE = Path(__file__).resolve().parent / "base_vectorial"
-MODELO = "all-MiniLM-L6-v2"   # el mismo de la práctica del curso; 384 dimensiones
+MODELO = "paraphrase-multilingual-MiniLM-L12-v2"   # multilingüe; 384 dimensiones
 COLECCION = "guias"
 
 # El modelo lee como máximo 256 tokens por texto: un fragmento más largo se trunca
@@ -35,7 +36,7 @@ def limpiar(texto: str) -> str:
 
 
 def fragmentar(texto: str) -> list[str]:
-    """Parte el texto en fragmentos de N palabras con solapamiento."""
+    """Para PDF: parte el texto en fragmentos de N palabras con solapamiento."""
     palabras = texto.split()
     fragmentos = []
     inicio = 0
@@ -45,6 +46,21 @@ def fragmentar(texto: str) -> list[str]:
         if fin >= len(palabras):
             break
         inicio = fin - SOLAPAMIENTO
+    return fragmentos
+
+
+def fragmentar_por_parrafos(texto: str) -> list[str]:
+    """Para .txt y .md: respeta los párrafos (separados por línea en blanco) y los agrupa
+    hasta llegar al tamaño del fragmento, sin cortar nunca un párrafo por la mitad."""
+    parrafos = [limpiar(p) for p in re.split(r"\n\s*\n", texto) if p.strip()]
+    fragmentos, actual = [], []
+    for parrafo in parrafos:
+        if actual and len(" ".join(actual + [parrafo]).split()) > PALABRAS_POR_FRAGMENTO:
+            fragmentos.append(" ".join(actual))
+            actual = []
+        actual.append(parrafo)
+    if actual:
+        fragmentos.append(" ".join(actual))
     return fragmentos
 
 
@@ -69,10 +85,14 @@ def main() -> None:
     for archivo in archivos:
         cantidad = 0
         for pagina, texto in extraer_paginas(archivo):
-            texto = limpiar(texto)
-            if len(texto) < 50:  # páginas vacías o que son solo imágenes
+            if len(texto.strip()) < 50:  # páginas vacías o que son solo imágenes
                 continue
-            for numero, fragmento in enumerate(fragmentar(texto)):
+            # Los PDF se cortan por cantidad de palabras; los .txt/.md respetan los párrafos
+            if archivo.suffix.lower() == ".pdf":
+                partes = fragmentar(limpiar(texto))
+            else:
+                partes = fragmentar_por_parrafos(texto)
+            for numero, fragmento in enumerate(partes):
                 ids.append(f"{archivo.stem}-p{pagina}-f{numero}")
                 textos.append(fragmento)
                 # Los metadatos permiten citar documento y página (práctica 4)
