@@ -7,3 +7,9 @@
 # Logs de tokens
 logs/*.log
 logs/*.csv
+
+# Servicio de IA en Python
+servicio-ia/venv/
+servicio-ia/base_vectorial/
+servicio-ia/.env
+servicio-ia/__pycache__/
